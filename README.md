@@ -22,6 +22,8 @@
 
 ![1737779150733.png](https://image.jianyandashu.com/i/2025/01/25/679467c75e15c.png)
 
+![1737779746713.png](https://image.jianyandashu.com/i/2025/01/25/67946a1b401e2.png)
+
 ## 使用说明
 
 1. 点击"添加快捷键"按钮添加新的快捷键配置
