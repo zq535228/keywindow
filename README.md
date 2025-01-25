@@ -22,7 +22,7 @@
 
 ![1737779150733.png](https://image.jianyandashu.com/i/2025/01/25/679467c75e15c.png)
 
-![1737779746713.png](https://image.jianyandashu.com/i/2025/01/25/67946a1b401e2.png)
+![1737779844265.png](https://image.jianyandashu.com/i/2025/01/25/67946a7d4da5b.png)
 
 ## 使用说明
 
