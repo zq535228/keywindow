@@ -2,6 +2,7 @@ using System;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Diagnostics;
+using System.IO;
 
 namespace 快捷键窗体切换
 {
@@ -144,6 +145,8 @@ namespace 快捷键窗体切换
             appComboBox.Enabled = !mappingCheckBox.Checked;
             pathTextBox.Enabled = !mappingCheckBox.Checked;
             browseButton.Enabled = !mappingCheckBox.Checked;
+            appComboBox.Text = mappingCheckBox.Checked?"内置映射":"";
+
         }
 
         private void MappedHotkeyTextBox_Click(object sender, EventArgs e)
@@ -214,38 +217,55 @@ namespace 快捷键窗体切换
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
                 dialog.Filter = "可执行文件 (*.exe)|*.exe|所有文件 (*.*)|*.*";
-                dialog.FilterIndex = 1;
-
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     pathTextBox.Text = dialog.FileName;
-                    appComboBox.Text = System.IO.Path.GetFileNameWithoutExtension(dialog.FileName);
+                    appComboBox.Text = Path.GetFileNameWithoutExtension(dialog.FileName);
+                }
+            }
+        }
+
+        public void SetProcessName(string processName)
+        {
+            if (appComboBox != null)
+            {
+                appComboBox.Text = processName;
+                if (processName == "TOGGLE_TOPMOST")
+                {
+                    pathTextBox.Enabled = false;
+                    browseButton.Enabled = false;
+                    mappingCheckBox.Enabled = false;
                 }
             }
         }
 
         public void SetConfig(HotkeyConfig config)
         {
-            if (config != null)
-            {
-                currentConfig = config;
-                hotkeyTextBox.Text = ((Keys)config.Key).ToString();
-                ctrlCheckBox.Checked = config.IsControl;
-                altCheckBox.Checked = config.IsAlt;
-                shiftCheckBox.Checked = config.IsShift;
-                winCheckBox.Checked = config.IsWin;
-                appComboBox.Text = config.ProcessName;
-                pathTextBox.Text = config.AppPath ?? "";
+            if (config == null) return;
 
-                mappingCheckBox.Checked = config.IsHotkeyMapping;
-                if (config.MappedHotkey != null)
-                {
-                    mappedHotkeyTextBox.Text = ((Keys)config.MappedHotkey.Key).ToString();
-                    mappedCtrlCheckBox.Checked = config.MappedHotkey.IsControl;
-                    mappedAltCheckBox.Checked = config.MappedHotkey.IsAlt;
-                    mappedShiftCheckBox.Checked = config.MappedHotkey.IsShift;
-                    mappedWinCheckBox.Checked = config.MappedHotkey.IsWin;
-                }
+            ctrlCheckBox.Checked = config.IsControl;
+            altCheckBox.Checked = config.IsAlt;
+            shiftCheckBox.Checked = config.IsShift;
+            winCheckBox.Checked = config.IsWin;
+            hotkeyTextBox.Text = ((Keys)config.Key).ToString();
+            appComboBox.Text = config.ProcessName;
+            pathTextBox.Text = config.AppPath;
+
+            if (config.ProcessName == "TOGGLE_TOPMOST")
+            {
+                pathTextBox.Enabled = false;
+                browseButton.Enabled = false;
+                mappingCheckBox.Enabled = false;
+            }
+
+            mappingCheckBox.Checked = config.IsHotkeyMapping;
+            if (config.IsHotkeyMapping && config.MappedHotkey != null)
+            {
+                mappedCtrlCheckBox.Checked = config.MappedHotkey.IsControl;
+                mappedAltCheckBox.Checked = config.MappedHotkey.IsAlt;
+                mappedShiftCheckBox.Checked = config.MappedHotkey.IsShift;
+                mappedWinCheckBox.Checked = config.MappedHotkey.IsWin;
+                mappedHotkeyTextBox.Text = ((Keys)config.MappedHotkey.Key).ToString();
             }
         }
 
