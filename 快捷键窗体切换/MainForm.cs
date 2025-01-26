@@ -332,39 +332,59 @@ namespace 快捷键窗体切换 {
         }
 
         private void RegisterNewHotkey(HotkeyConfig config) {
-            uint modifiers = 0;
-            if(config.IsAlt) modifiers |= MOD_ALT;
-            if(config.IsControl) modifiers |= MOD_CONTROL;
-            if(config.IsShift) modifiers |= MOD_SHIFT;
-            if(config.IsWin) modifiers |= MOD_WIN;
+            // 检查是否已存在 TOGGLE_TOPMOST
+            if (config.ProcessName == "TOGGLE_TOPMOST")
+            {
+                var existingTopmost = hotkeyConfigs.Values.FirstOrDefault(c => c.ProcessName == "TOGGLE_TOPMOST");
+                if (existingTopmost != null)
+                {
+                    MessageBox.Show("顶置窗口快捷键已存在，请先删除现有的再添加新的。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
 
-            if(RegisterHotKey(this.Handle , currentHotkeyId , modifiers , config.Key)) {
-                hotkeyConfigs.Add(currentHotkeyId , config);
+            uint modifiers = 0;
+            if (config.IsAlt) modifiers |= MOD_ALT;
+            if (config.IsControl) modifiers |= MOD_CONTROL;
+            if (config.IsShift) modifiers |= MOD_SHIFT;
+            if (config.IsWin) modifiers |= MOD_WIN;
+
+            if (RegisterHotKey(this.Handle, currentHotkeyId, modifiers, config.Key))
+            {
+                hotkeyConfigs.Add(currentHotkeyId, config);
 
                 // 添加到ListView
                 var item = new ListViewItem(currentHotkeyId.ToString());
 
                 // 尝试获取应用程序图标
-                try {
+                try
+                {
                     string appPath = config.AppPath;
 
                     // 尝试从运行中的进程获取图标
                     var process = Process.GetProcessesByName(config.ProcessName).FirstOrDefault();
-                    try{
+                    try
+                    {
                         appPath = process.MainModule.FileName;
-                    } catch(Exception ex) {
+                    }
+                    catch (Exception ex)
+                    {
                         Debug.WriteLine($"从进程获取图标失败: {ex.Message}");
                     }
 
                     Icon appIcon = GetFileIcon(appPath);
-                    if(appIcon != null) {
+                    if (appIcon != null)
+                    {
                         string imageKey = $"img_{currentHotkeyId}";
-                        if(!listView.SmallImageList.Images.ContainsKey(imageKey)) {
-                            listView.SmallImageList.Images.Add(imageKey , appIcon);
+                        if (!listView.SmallImageList.Images.ContainsKey(imageKey))
+                        {
+                            listView.SmallImageList.Images.Add(imageKey, appIcon);
                         }
                         item.ImageKey = imageKey;
                     }
-                } catch(Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     Debug.WriteLine($"获取图标失败: {ex.Message}");
                 }
 
@@ -374,7 +394,9 @@ namespace 快捷键窗体切换 {
                 listView.Items.Add(item);
 
                 currentHotkeyId++;
-            } else {
+            }
+            else
+            {
                 MessageBox.Show("注册快捷键失败！");
             }
         }
